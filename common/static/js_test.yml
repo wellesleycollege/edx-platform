@@ -41,6 +41,7 @@ lib_paths:
     - coffee/src/ajax_prefix.js
     - js/test/add_ajax_prefix.js
     - js/test/i18n.js
+    - js/vendor/draggabilly.pkgd.js
     - coffee/src/jquery.immediateDescendents.js
 
 # Paths to source JavaScript files
