@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 
 from courseware.model_data import FieldDataCache
 from courseware.module_render import get_module, toc_for_course
-from courseware.tests.factories import UserFactory
+from courseware.tests.factories import UserFactory, InstructorFactory
 from milestones import api as milestones_api
 from milestones.models import MilestoneRelationshipType
 from xmodule.modulestore.django import modulestore
@@ -70,7 +70,7 @@ class EntranceExamTestCases(ModuleStoreTestCase):
             category='sequential',
             display_name="Exam Sequential - Subsection 1",
             graded=True,
-            metadata={'in_entrance_exam': True}
+            in_entrance_exam=True
         )
         subsection = ItemFactory.create(
             parent=self.exam_1,
@@ -136,6 +136,80 @@ class EntranceExamTestCases(ModuleStoreTestCase):
 
         self.client.login(username=self.request.user.username, password="test")
         CourseEnrollment.enroll(self.request.user, self.course.id)
+
+        self.expected_locked_toc = (
+            [
+                {
+                    'active': True,
+                    'sections': [
+                        {
+                            'url_name': u'Exam_Sequential_-_Subsection_1',
+                            'display_name': u'Exam Sequential - Subsection 1',
+                            'graded': True,
+                            'format': '',
+                            'due': None,
+                            'active': True
+                        }
+                    ],
+                    'url_name': u'Entrance_Exam_Section_-_Chapter_1',
+                    'display_name': u'Entrance Exam Section - Chapter 1'
+                }
+            ]
+        )
+        self.expected_unlocked_toc = (
+            [
+                {
+                    'active': False,
+                    'sections': [
+                        {
+                            'url_name': u'Welcome',
+                            'display_name': u'Welcome',
+                            'graded': False,
+                            'format': '',
+                            'due': None,
+                            'active': False
+                        },
+                        {
+                            'url_name': u'Lesson_1',
+                            'display_name': u'Lesson 1',
+                            'graded': False,
+                            'format': '',
+                            'due': None,
+                            'active': False
+                        }
+                    ],
+                    'url_name': u'Overview',
+                    'display_name': u'Overview'
+                },
+                {
+                    'active': False,
+                    'sections': [],
+                    'url_name': u'Week_1',
+                    'display_name': u'Week 1'
+                },
+                {
+                    'active': False,
+                    'sections': [],
+                    'url_name': u'Instructor',
+                    'display_name': u'Instructor'
+                },
+                {
+                    'active': True,
+                    'sections': [
+                        {
+                            'url_name': u'Exam_Sequential_-_Subsection_1',
+                            'display_name': u'Exam Sequential - Subsection 1',
+                            'graded': True,
+                            'format': '',
+                            'due': None,
+                            'active': True
+                        }
+                    ],
+                    'url_name': u'Entrance_Exam_Section_-_Chapter_1',
+                    'display_name': u'Entrance Exam Section - Chapter 1'
+                }
+            ]
+        )
 
     @mock.patch('xmodule.x_module.XModuleMixin.has_dynamic_children', mock.Mock(return_value='True'))
     def test_view_redirect_if_entrance_exam_required(self):
@@ -237,25 +311,6 @@ class EntranceExamTestCases(ModuleStoreTestCase):
         """
         # This user helps to cover a discovered bug in the milestone fulfillment logic
         chaos_user = UserFactory()
-        expected_locked_toc = (
-            [
-                {
-                    'active': True,
-                    'sections': [
-                        {
-                            'url_name': u'Exam_Sequential_-_Subsection_1',
-                            'display_name': u'Exam Sequential - Subsection 1',
-                            'graded': True,
-                            'format': '',
-                            'due': None,
-                            'active': True
-                        }
-                    ],
-                    'url_name': u'Entrance_Exam_Section_-_Chapter_1',
-                    'display_name': u'Entrance Exam Section - Chapter 1'
-                }
-            ]
-        )
         locked_toc = toc_for_course(
             self.request,
             self.course,
@@ -263,7 +318,7 @@ class EntranceExamTestCases(ModuleStoreTestCase):
             self.exam_1.url_name,
             self.field_data_cache
         )
-        for toc_section in expected_locked_toc:
+        for toc_section in self.expected_locked_toc:
             self.assertIn(toc_section, locked_toc)
 
         # Set up the chaos user
@@ -308,62 +363,6 @@ class EntranceExamTestCases(ModuleStoreTestCase):
             field_data_cache,
         )._xmodule  # pylint: disable=protected-access
         module.system.publish(self.problem_2, 'grade', grade_dict)
-
-        expected_unlocked_toc = (
-            [
-                {
-                    'active': False,
-                    'sections': [
-                        {
-                            'url_name': u'Welcome',
-                            'display_name': u'Welcome',
-                            'graded': False,
-                            'format': '',
-                            'due': None,
-                            'active': False
-                        },
-                        {
-                            'url_name': u'Lesson_1',
-                            'display_name': u'Lesson 1',
-                            'graded': False,
-                            'format': '',
-                            'due': None,
-                            'active': False
-                        }
-                    ],
-                    'url_name': u'Overview',
-                    'display_name': u'Overview'
-                },
-                {
-                    'active': False,
-                    'sections': [],
-                    'url_name': u'Week_1',
-                    'display_name': u'Week 1'
-                },
-                {
-                    'active': False,
-                    'sections': [],
-                    'url_name': u'Instructor',
-                    'display_name': u'Instructor'
-                },
-                {
-                    'active': True,
-                    'sections': [
-                        {
-                            'url_name': u'Exam_Sequential_-_Subsection_1',
-                            'display_name': u'Exam Sequential - Subsection 1',
-                            'graded': True,
-                            'format': '',
-                            'due': None,
-                            'active': True
-                        }
-                    ],
-                    'url_name': u'Entrance_Exam_Section_-_Chapter_1',
-                    'display_name': u'Entrance Exam Section - Chapter 1'
-                }
-            ]
-        )
-
         unlocked_toc = toc_for_course(
             self.request,
             self.course,
@@ -372,5 +371,39 @@ class EntranceExamTestCases(ModuleStoreTestCase):
             self.field_data_cache
         )
 
-        for toc_section in expected_unlocked_toc:
+        for toc_section in self.expected_unlocked_toc:
+            self.assertIn(toc_section, unlocked_toc)
+
+    def test_skip_entrance_exame_gating(self):
+        """
+        Tests gating is disabled if skip entrance exam is set for a user.
+        """
+        # make sure toc is locked before allowing user to skip entrance exam
+        locked_toc = toc_for_course(
+            self.request,
+            self.course,
+            self.entrance_exam.url_name,
+            self.exam_1.url_name,
+            self.field_data_cache
+        )
+        for toc_section in self.expected_locked_toc:
+            self.assertIn(toc_section, locked_toc)
+
+        # hit skip entrance exam api in instructor app
+        instructor = InstructorFactory(course_key=self.course.id)
+        self.client.login(username=instructor.username, password='test')
+        url = reverse('mark_student_can_skip_entrance_exam', kwargs={'course_id': unicode(self.course.id)})
+        response = self.client.post(url, {
+            'unique_student_identifier': self.request.user.email,
+        })
+        self.assertEqual(response.status_code, 200)
+
+        unlocked_toc = toc_for_course(
+            self.request,
+            self.course,
+            self.entrance_exam.url_name,
+            self.exam_1.url_name,
+            self.field_data_cache
+        )
+        for toc_section in self.expected_unlocked_toc:
             self.assertIn(toc_section, unlocked_toc)

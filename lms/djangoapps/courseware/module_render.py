@@ -36,7 +36,7 @@ from lms.djangoapps.lms_xblock.models import XBlockAsidesConfig
 from edxmako.shortcuts import render_to_string
 from eventtracking import tracker
 from psychometrics.psychoanalyze import make_psychometrics_data_update_handler
-from student.models import anonymous_id_for_user, user_by_anonymous_id
+from student.models import anonymous_id_for_user, user_by_anonymous_id, EntranceExamConfiguration
 from xblock.core import XBlock
 from xblock.fields import Scope
 from xblock.runtime import KvsFieldData, KeyValueStore
