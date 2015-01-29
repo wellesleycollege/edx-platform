@@ -366,6 +366,17 @@ def _index_bulk_op(request, course_key, chapter, section, position):
             user.id, unicode(course.id))
         return redirect(reverse('dashboard'))
 
+    # see if course has entrance exam enabled then it should be passed by user
+    # Note that if the entrance exam feature flag has been turned off (default) then this check will
+    # always pass
+    if not has_access(user, 'view_courseware_with_entrance_exam', course):
+        # entrance exam is not passed therefore redirect to the Dashboard
+        log.info(
+            u'User %d tried to view course %s '
+            u'without passing entrance exam',
+            user.id, unicode(course.id))
+        return redirect(reverse('dashboard'))
+
     # check to see if there is a required survey that must be taken before
     # the user can access the course.
     if survey.utils.must_answer_survey(course, user):
