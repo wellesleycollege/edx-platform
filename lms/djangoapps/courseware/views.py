@@ -370,12 +370,12 @@ def _index_bulk_op(request, course_key, chapter, section, position):
     # Note that if the entrance exam feature flag has been turned off (default) then this check will
     # always pass
     if not has_access(user, 'view_courseware_with_entrance_exam', course):
-        # entrance exam is not passed therefore redirect to the Dashboard
+        # entrance exam is not passed therefore redirect to the courseware
         log.info(
             u'User %d tried to view course %s '
             u'without passing entrance exam',
             user.id, unicode(course.id))
-        return redirect(reverse('dashboard'))
+        return redirect(reverse('courseware', args=[unicode(course.id)]))
 
     # check to see if there is a required survey that must be taken before
     # the user can access the course.
@@ -667,6 +667,10 @@ def course_info(request, course_id):
 
     with modulestore().bulk_operations(course_key):
         course = get_course_with_access(request.user, 'load', course_key)
+
+        # check to see if there is entrance exam not passed then it redirect to courseware
+        if not has_access(request.user, 'view_courseware_with_entrance_exam', course):
+            return redirect(reverse('courseware', args=[unicode(course.id)]))
 
         # check to see if there is a required survey that must be taken before
         # the user can access the course.
