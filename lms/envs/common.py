@@ -347,6 +347,10 @@ FEATURES = {
 
     # Courseware search feature
     'ENABLE_COURSEWARE_SEARCH': False,
+
+    # Certificates Web/HTML Views
+    'CERTIFICATES_HTML_VIEW': False,
+    'CERTS_HTML_VIEW_CONFIG_PATH': 'lms/envs/certificates_html_view.json',
 }
 
 # Ignore static asset files on import which match this pattern

@@ -460,3 +460,7 @@ FEATURES['ENTRANCE_EXAMS'] = True
 FEATURES['ENABLE_COURSEWARE_SEARCH'] = True
 # Use MockSearchEngine as the search engine for test scenario
 SEARCH_ENGINE = "search.tests.mock_search_engine.MockSearchEngine"
+
+# Certificates Views
+FEATURES['CERTIFICATES_HTML_VIEW'] = True
+FEATURES['CERTS_HTML_VIEW_CONFIG_PATH'] = 'lms/envs/certificates_html_view.json'
