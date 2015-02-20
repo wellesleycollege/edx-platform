@@ -178,6 +178,23 @@ class EntranceExamTestCases(ModuleStoreTestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('To access course materials, you must score', resp.content)
 
+    def test_entrance_exam_requirement_message_hidden(self):
+        """
+        Unit Test: entrance exam message should not be present outside the context of entrance exam subsection.
+        """
+        url = reverse(
+            'courseware_section',
+            kwargs={
+                'course_id': unicode(self.course.id),
+                'chapter': self.chapter.location.name,
+                'section': self.chapter_subsection.location.name
+            }
+        )
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('To access course materials, you must score', resp.content)
+        self.assertNotIn('You have passed the entrance exam.', resp.content)
+
     def test_entrance_exam_passed_message_and_course_content(self):
         """
         Unit Test: exam passing message and rest of the course section should be present
@@ -211,7 +228,7 @@ class EntranceExamTestCases(ModuleStoreTestCase):
 
         resp = self.client.get(url)
         self.assertNotIn('To access course materials, you must score', resp.content)
-        self.assertIn('You have successfully passed the exam. Your current score is', resp.content)
+        self.assertIn('You have passed the entrance exam.', resp.content)
         self.assertIn('Lesson 1', resp.content)
 
     def test_entrance_exam_gating(self):

@@ -246,7 +246,7 @@ ${fragment.foot_html()}
             </p>
             % else:
               <p class="sequential-status-message">
-                ${_('You have successfully passed the exam. Your current score is {current_score}%.').format(
+                ${_('Your score is {current_score}%. You have passed the entrance exam.').format(
                     current_score=int(entrance_exam_current_score * 100)
                 )}
             </p>
