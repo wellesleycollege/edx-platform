@@ -442,11 +442,6 @@ def _index_bulk_op(request, course_key, chapter, section, position):
 
         context['show_chat'] = show_chat
 
-        if settings.FEATURES.get('ENTRANCE_EXAMS', False) and course.entrance_exam_enabled:
-            __, is_exam_passed = get_entrance_exam_content_info(request, course)
-            context['entrance_exam_current_score'] = get_entrance_exam_score(request, course)
-            context['entrance_exam_passed'] = is_exam_passed
-
         chapter_descriptor = course.get_child_by(lambda m: m.location.name == chapter)
         if chapter_descriptor is not None:
             save_child_position(course_module, chapter)
@@ -460,6 +455,14 @@ def _index_bulk_op(request, course_key, chapter, section, position):
                 log.debug('staff masquerading as student: no chapter %s', chapter)
                 return redirect(reverse('courseware', args=[course.id.to_deprecated_string()]))
             raise Http404
+
+        if settings.FEATURES.get('ENTRANCE_EXAMS', False) and course.entrance_exam_enabled:
+            # Message should not appear outside the context of entrance exam subsection.
+            # if section is none then we don't need to show message on welcome back screen also.
+            if getattr(chapter_module, 'is_entrance_exam', False) and section is not None:
+                __, is_exam_passed = get_entrance_exam_content_info(request, course)
+                context['entrance_exam_current_score'] = get_entrance_exam_score(request, course)
+                context['entrance_exam_passed'] = is_exam_passed
 
         if section is not None:
             section_descriptor = chapter_descriptor.get_child_by(lambda m: m.location.name == section)

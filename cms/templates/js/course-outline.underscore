@@ -123,7 +123,7 @@ if (xblockInfo.get('graded')) {
             <% } else if (xblockInfo.getExamScore() !=null) { %>
                 <div class="status-exam">
                     <span>
-                          <%= gettext('You must score ')%> <%= xblockInfo.getExamScore() %> <%= gettext('% or higher to proceed')%>
+                          <%= gettext('Students must score ')%> <%= xblockInfo.getExamScore() %> <%= gettext('% or higher to access course materials.')%>
                     </span>
                 </div>
             <% } %>
