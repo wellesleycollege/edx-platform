@@ -896,9 +896,10 @@ def settings_handler(request, course_key_string):
                 # if pre-requisite course feature is enabled set pre-requisite course
                 if prerequisite_course_enabled:
                     prerequisite_course_keys = request.json.get('pre_requisite_courses', [])
-                    if not all(is_valid_course_key(course_key) for course_key in prerequisite_course_keys):
-                        return JsonResponseBadRequest({"error": _("Invalid prerequisite course key")})
-                    set_prerequisite_courses(course_key, prerequisite_course_keys)
+                    if prerequisite_course_keys:
+                        if not all(is_valid_course_key(course_key) for course_key in prerequisite_course_keys):
+                            return JsonResponseBadRequest({"error": _("Invalid prerequisite course key")})
+                        set_prerequisite_courses(course_key, prerequisite_course_keys)
 
                 # If the entrance exams feature has been enabled, we'll need to check for some
                 # feature-specific settings and handle them accordingly
