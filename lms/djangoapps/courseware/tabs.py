@@ -28,10 +28,11 @@ def get_course_tab_list(course, user):
     )
 
     # Entrance Exams Feature
-    # If the course has an entrance exam, we'll need to see if the user has not passed it
+    # If the course has an entrance exam, we'll need to see if the user is not member of staff
+    # and has not passed it
     # If so, we'll need to hide away all of the tabs except for Courseware and Instructor
     entrance_exam_mode = False
-    if settings.FEATURES.get('ENTRANCE_EXAMS', False):
+    if settings.FEATURES.get('MILESTONES_APP', False) and not has_access(user, 'staff', course, course.id):
         if getattr(course, 'entrance_exam_enabled', False):
             course_milestones_paths = get_course_milestones_fulfillment_paths(
                 unicode(course.id),

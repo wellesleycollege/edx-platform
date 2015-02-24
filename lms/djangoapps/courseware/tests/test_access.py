@@ -15,7 +15,7 @@ from xmodule.course_module import (
     CATALOG_VISIBILITY_CATALOG_AND_ABOUT, CATALOG_VISIBILITY_ABOUT,
     CATALOG_VISIBILITY_NONE
 )
-from xmodule.modulestore.tests.factories import CourseFactory
+from xmodule.modulestore.tests.factories import CourseFactory, ItemFactory
 from xmodule.modulestore.tests.django_utils import ModuleStoreTestCase
 
 from util.milestones_helpers import (
@@ -322,6 +322,98 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
         self.assertEqual(response.status_code, 302)
 
         fulfill_course_milestone(pre_requisite_course.id, user)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    @patch.dict("django.conf.settings.FEATURES", {'MILESTONES_APP': True})
+    @patch('courseware.access.get_required_content_milestones', Mock(return_value=['a value']))
+    def test_courseware_page_access_without_passing_entrance_exam(self):
+        """
+        Test courseware access page without passing entrance exam
+        """
+        seed_milestone_relationship_types()
+        course = CourseFactory.create(
+            org='edX',
+            course='900',
+            run='test_ee',
+            entrance_exam_enabled=True
+        )
+        chapter = ItemFactory.create(
+            parent=course,
+            category='chapter',
+            display_name="Week 1"
+        )
+        user = UserFactory.create()
+        self.login(user.email, 'test')
+        CourseEnrollmentFactory(user=user, course_id=course.id)
+
+        url = reverse(
+            'courseware_chapter',
+            kwargs={'course_id': unicode(course.id), 'chapter': chapter.url_name}
+        )
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            reverse(
+                'courseware',
+                args=[unicode(course.id)]
+            )
+        )
+        self.assertEqual(response.status_code, 302)
+
+    @patch.dict("django.conf.settings.FEATURES", {'MILESTONES_APP': True})
+    def test_courseware_page_access_after_passing_entrance_exam(self):
+        """
+        Test courseware access page after passing entrance exam
+        """
+        seed_milestone_relationship_types()
+        course = CourseFactory.create(
+            org='edX',
+            course='900',
+            run='test_ee',
+            entrance_exam_enabled=True
+        )
+        chapter = ItemFactory.create(
+            parent=course,
+            category='chapter',
+            display_name="Week 1"
+        )
+        user = UserFactory.create()
+        self.login(user.email, 'test')
+        CourseEnrollmentFactory(user=user, course_id=course.id)
+
+        url = reverse(
+            'courseware_chapter',
+            kwargs={'course_id': unicode(course.id), 'chapter': chapter.url_name}
+        )
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    @patch.dict("django.conf.settings.FEATURES", {'MILESTONES_APP': True})
+    @patch('courseware.access.get_required_content_milestones', Mock(return_value=['a value']))
+    def test_courseware_page_access_with_staff_user_without_passing_entrance_exam(self):
+        """
+        Test courseware access page without passing entrance exam but with staff user
+        """
+        seed_milestone_relationship_types()
+        course = CourseFactory.create(
+            org='edX',
+            course='900',
+            run='test_ee',
+            entrance_exam_enabled=True
+        )
+        chapter = ItemFactory.create(
+            parent=course,
+            category='chapter',
+            display_name="Week 1"
+        )
+        staff_user = StaffFactory.create()
+        self.login(staff_user.email, 'test')
+
+        url = reverse(
+            'courseware_chapter',
+            kwargs={'course_id': unicode(course.id), 'chapter': chapter.url_name}
+        )
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 

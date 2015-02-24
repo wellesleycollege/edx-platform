@@ -369,7 +369,7 @@ def _index_bulk_op(request, course_key, chapter, section, position):
     # see if course has entrance exam enabled then it should be passed by user
     # Note that if the entrance exam feature flag has been turned off (default) then this check will
     # always pass
-    if not has_access(user, 'view_courseware_with_entrance_exam', course):
+    if chapter and not has_access(user, 'view_courseware_with_entrance_exam', course):
         # entrance exam is not passed therefore redirect to the courseware
         log.info(
             u'User %d tried to view course %s '

@@ -106,6 +106,26 @@ def make_track_function(request):
     return function
 
 
+def _get_required_content(course, user):
+    """
+    Queries milestones subsystem to see if the specified course is gated on one or more milestones,
+    and if those milestones can be fulfilled via completion of a particular course content module
+    """
+    required_content = get_required_content_milestones(user, course.id)
+
+    can_skip_entrance_exam = EntranceExamConfiguration.user_can_skip_entrance_exam(user, course.id)
+    # check if required_content has any entrance exam
+    # and user is allowed to skip it or user is member of staff
+    # then remove it from required content
+    if required_content and getattr(course, 'entrance_exam_enabled', False) and \
+            (can_skip_entrance_exam or has_access(user, 'staff', course, course.id)):
+        descriptors = [modulestore().get_item(UsageKey.from_string(content)) for content in required_content]
+        entrance_exam_contents = [unicode(descriptor.location)
+                                  for descriptor in descriptors if descriptor.is_entrance_exam]
+        required_content = list(set(required_content) - set(entrance_exam_contents))
+    return required_content
+
+
 def toc_for_course(request, course, active_chapter, active_section, field_data_cache):
     '''
     Create a table of contents from the module store

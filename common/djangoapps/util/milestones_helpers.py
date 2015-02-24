@@ -111,6 +111,30 @@ def get_pre_requisite_courses_not_completed(user, enrolled_courses):
     return pre_requisite_courses
 
 
+def get_required_content_milestones(user, course_key):
+    """
+    Get all of the outstanding content milestones for this course, for this user
+    It return list of outstanding content milestones
+    """
+    required_contents = []
+    if settings.FEATURES.get('MILESTONES_APP', False):
+        try:
+            milestone_paths = get_course_milestones_fulfillment_paths(
+                unicode(course_key),
+                serialize_user(user)
+            )
+        except InvalidMilestoneRelationshipTypeException:
+            return required_contents
+
+        # For each outstanding milestone, see if this content is one of its fulfillment paths
+        for path_key in milestone_paths:
+            milestone_path = milestone_paths[path_key]
+            if milestone_path.get('content') and len(milestone_path['content']):
+                for content in milestone_path['content']:
+                    required_contents.append(content)
+    return required_contents
+
+
 def get_prerequisite_courses_display(course_descriptor):
     """
     It would retrieve pre-requisite courses, make display strings

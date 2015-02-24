@@ -26,9 +26,9 @@ from student.roles import (
     GlobalStaff, CourseStaffRole, CourseInstructorRole,
     OrgStaffRole, OrgInstructorRole, CourseBetaTesterRole
 )
-from student.models import CourseEnrollment, CourseEnrollmentAllowed
+from student.models import CourseEnrollment, CourseEnrollmentAllowed, EntranceExamConfiguration
 from opaque_keys.edx.keys import CourseKey, UsageKey
-from util.milestones_helpers import get_pre_requisite_courses_not_completed
+from util.milestones_helpers import get_pre_requisite_courses_not_completed, get_required_content_milestones
 DEBUG_ACCESS = False
 
 log = logging.getLogger(__name__)
@@ -286,12 +286,12 @@ def _has_access_course_desc(user, action, course):
         entrance exam then it returns False if user has not passed entrance exam
         otherwise return True.
         """
-        if settings.FEATURES.get('ENTRANCE_EXAMS') \
+        if settings.FEATURES.get('MILESTONES_APP') \
                 and getattr(course, 'entrance_exam_enabled', False) \
                 and not _has_staff_access_to_descriptor(user, course, course.id) \
                 and not user.is_anonymous() \
-                and not user_can_skip_entrance_exam(user, course.id) \
-                and get_required_course_contents(user, [course.id]):
+                and not EntranceExamConfiguration.user_can_skip_entrance_exam(user, course.id) \
+                and get_required_content_milestones(user, course.id):
             return False
         else:
             return True
