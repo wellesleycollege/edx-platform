@@ -325,7 +325,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @patch.dict("django.conf.settings.FEATURES", {'MILESTONES_APP': True})
+    @patch.dict("django.conf.settings.FEATURES", {'ENTRANCE_EXAMS': True})
     @patch('courseware.access.get_required_content_milestones', Mock(return_value=['a value']))
     def test_courseware_page_access_without_passing_entrance_exam(self):
         """
@@ -361,7 +361,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
         )
         self.assertEqual(response.status_code, 302)
 
-    @patch.dict("django.conf.settings.FEATURES", {'MILESTONES_APP': True})
+    @patch.dict("django.conf.settings.FEATURES", {'ENTRANCE_EXAMS': True})
     def test_courseware_page_access_after_passing_entrance_exam(self):
         """
         Test courseware access page after passing entrance exam
@@ -389,7 +389,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-    @patch.dict("django.conf.settings.FEATURES", {'MILESTONES_APP': True})
+    @patch.dict("django.conf.settings.FEATURES", {'ENTRANCE_EXAMS': True})
     @patch('courseware.access.get_required_content_milestones', Mock(return_value=['a value']))
     def test_courseware_page_access_with_staff_user_without_passing_entrance_exam(self):
         """
@@ -407,8 +407,9 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
             category='chapter',
             display_name="Week 1"
         )
-        staff_user = StaffFactory.create()
+        staff_user = StaffFactory.create(course_key=course.id)
         self.login(staff_user.email, 'test')
+        CourseEnrollmentFactory(user=staff_user, course_id=course.id)
 
         url = reverse(
             'courseware_chapter',

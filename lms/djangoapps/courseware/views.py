@@ -367,15 +367,20 @@ def _index_bulk_op(request, course_key, chapter, section, position):
         return redirect(reverse('dashboard'))
 
     # see if course has entrance exam enabled then it should be passed by user
-    # Note that if the entrance exam feature flag has been turned off (default) then this check will
-    # always pass
-    if chapter and not has_access(user, 'view_courseware_with_entrance_exam', course):
-        # entrance exam is not passed therefore redirect to the courseware
-        log.info(
-            u'User %d tried to view course %s '
-            u'without passing entrance exam',
-            user.id, unicode(course.id))
-        return redirect(reverse('courseware', args=[unicode(course.id)]))
+    # before accessing any other chapter/section of course
+    # Note that if the entrance exam feature flag has been turned off (default)
+    # then this check will always pass
+    if chapter and getattr(course, 'entrance_exam_enabled', False):
+        chapter_descriptor = course.get_child_by(lambda m: m.location.name == chapter)
+        if chapter_descriptor and not getattr(chapter_descriptor, 'is_entrance_exam', False) \
+                and not has_access(user, 'view_courseware_with_entrance_exam', course):
+            # entrance exam is not passed therefore redirect to the courseware
+            log.info(
+                u'User %d tried to view course %s '
+                u'without passing entrance exam',
+                user.id, unicode(course.id)
+            )
+            return redirect(reverse('courseware', args=[unicode(course.id)]))
 
     # check to see if there is a required survey that must be taken before
     # the user can access the course.

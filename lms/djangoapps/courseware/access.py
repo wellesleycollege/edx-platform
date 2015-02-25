@@ -286,7 +286,7 @@ def _has_access_course_desc(user, action, course):
         entrance exam then it returns False if user has not passed entrance exam
         otherwise return True.
         """
-        if settings.FEATURES.get('MILESTONES_APP') \
+        if settings.FEATURES.get('ENTRANCE_EXAMS') \
                 and getattr(course, 'entrance_exam_enabled', False) \
                 and not _has_staff_access_to_descriptor(user, course, course.id) \
                 and not user.is_anonymous() \
