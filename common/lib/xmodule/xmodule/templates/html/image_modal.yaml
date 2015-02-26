@@ -1,7 +1,15 @@
 ---
 metadata:
-    display_name: Full Screen Image
+    display_name: Full Screen Image Tool
 data: |
-        <h2>Full Screen Image</h2>
-        <p>Use the full screen image tool to allow students to open the image in the full screen, zoom in on the image, and drag the image within the screen.</p>
+        <h2>Full Screen Image Tool</h2>
+        <p>Use the Full Screen Image tool to allow learners to open the image in the full screen, zoom in on the image, and drag the image within the screen.</p>
+        <p>With the Full Screen Image tool, learners can see the image's detail as well as its context within the unit.</p>
+        <p>Modify this template as needed.</p>
+        <ol>
+        <li>Replace the value of the link's <strong>href</strong> attribute with the path to the full size image. Do not change the value of the class attribute.</li>
+        <li>Replace the value of the image's <strong>src</strong> attribute with the path to the image that will appear in the unit before a learner opens in full screen mode.</li>
+        </ol>
+        <p><strong>Note</strong>: Test viewing the image in the full screen in the LMS; you cannot view it in full screen from within Studio.</p>
+
         <a href="http://static.class.stanford.edu/stanford-hills-big.jpg" class="modal-content"><img alt="The Stanford Hills" src="http://static.class.stanford.edu/stanford-hills-small.jpg" /></a>
