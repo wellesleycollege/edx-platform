@@ -1,14 +1,19 @@
 ---
 metadata:
-    display_name: IFrame
+    display_name: IFrame Tool
 data: |
-      <h2>IFrame</h2>
-      <p>An IFrame allows you to integrate ungraded exercises and tools from any Internet site into the body of your course. The IFrame appears inside an HTML component, and the exercise or tool appears inside the IFrame.</p>
-      <p>IFrames are well-suited for third-party tools that demonstrate a concept but that won't be graded or store student data. For example, the tool in this template allows students to experiment with the way the shape of a triangle affects a particular line that is derived from the triangle.</p>
-      <p>To add the exercise or tool in an IFrame, replace the URL in the example tool below with the URL of the page that contains the exercise or tool that you want. Note that the URL must start with https instead of http so that the IFrame will appear in all browsers.</p>
-      <p>For more information about IFrames and their attributes, <a href="http://www.w3.org/wiki/HTML/Elements/iframe">see the IFrame specification.</a></p>
-      <p>In the image below, drag any of the red points to a new location. As you drag the point, notice the way the point's position affects the triangle's Euler line.</p>
+      <h2>IFrame Tool</h2>
+      <p>Use the IFrame tool to embed an exercise or tool from any web site into your course content. For example, the tool below allows learners to experiment with how the shape of a triangle affects a line that is derived from the triangle.</p></p>
+      <p>Exercises in an IFrame are not graded. To embed graded exercises, use a Custom JavaScript Problem.</p>
+      <p>Modify this template as needed.</p>
+      <p>To modify the IFrame, you must edit the HTML source code. When editing this template, click <strong>HTML</strong> in the toolbar.</p>
+      <ol>
+      <li>Replace the value of the <strong>src</strong> attribute of the IFrame with the URL of the tool that you want in your course.
+      <p><strong>Note</strong>: The URL must start with <strong>https</strong> instead of http, to ensure that the IFrame will appear in all browsers.</p></li></li>
+      <li>Replace the value of the <strong>title</strong> attribute with the title of the tool. You must include the title for accessibility.
+      <li>Replace other IFrame attributes as needed. See <a href="http://www.w3.org/wiki/HTML/Elements/iframe" target="_blank">the IFrame specification</a> for more information.</li>
+      <li>Replace the text between the opening and closing <strong>iframe</strong> tags. A learner sees this text if the browser does not support IFrames.
+      </ol>
       <iframe title="Euler Line Demo" src="https://studio.edx.org/c4x/edX/DemoX/asset/eulerLineDemo.html" width="402" height="402" marginwidth="0" marginheight="0" frameborder="0" scrolling="no">
-      To add the exercise or tool in an IFrame, replace the URL in the example tool below with the URL of the page that contains the exercise or tool that you want. Note that the URL must start with https instead of http so that the IFrame will appear in all browsers. You must also replace the value of the title attribute with text that describes the external content. This text is not visible, but can be accessed by screen reader users.
+      Replace this text with information for those whose browsers do not support IFrames.
       </iframe>
-
