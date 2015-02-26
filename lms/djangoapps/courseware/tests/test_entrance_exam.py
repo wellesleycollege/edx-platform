@@ -256,6 +256,12 @@ class EntranceExamTestCases(ModuleStoreTestCase):
         """
         Unit Test: entrance exam message should not be present outside the context of entrance exam subsection.
         """
+        # Login as staff to avoid redirect to entrance exam
+        self.client.logout()
+        staff_user = StaffFactory(course_key=self.course.id)
+        self.client.login(username=staff_user.username, password='test')
+        CourseEnrollment.enroll(staff_user, self.course.id)
+
         url = reverse(
             'courseware_section',
             kwargs={

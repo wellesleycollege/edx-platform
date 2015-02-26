@@ -326,7 +326,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
         self.assertEqual(response.status_code, 200)
 
     @patch.dict("django.conf.settings.FEATURES", {'ENTRANCE_EXAMS': True})
-    @patch('courseware.access.get_required_content_milestones', Mock(return_value=['a value']))
+    @patch('courseware.access.get_required_content', Mock(return_value=['a value']))
     def test_courseware_page_access_without_passing_entrance_exam(self):
         """
         Test courseware access page without passing entrance exam
@@ -390,7 +390,7 @@ class AccessTestCase(LoginEnrollmentTestCase, ModuleStoreTestCase):
         self.assertEqual(response.status_code, 200)
 
     @patch.dict("django.conf.settings.FEATURES", {'ENTRANCE_EXAMS': True})
-    @patch('courseware.access.get_required_content_milestones', Mock(return_value=['a value']))
+    @patch('courseware.access.get_required_content', Mock(return_value=['a value']))
     def test_courseware_page_access_with_staff_user_without_passing_entrance_exam(self):
         """
         Test courseware access page without passing entrance exam but with staff user

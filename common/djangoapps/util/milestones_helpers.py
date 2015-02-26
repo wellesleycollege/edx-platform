@@ -6,7 +6,7 @@ Utility library for working with the edx-milestones app
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from opaque_keys import InvalidKeyError
-from opaque_keys.edx.keys import CourseKey
+from opaque_keys.edx.keys import CourseKey, UsageKey
 
 from courseware.models import StudentModule
 from xmodule.modulestore.django import modulestore
@@ -111,30 +111,6 @@ def get_pre_requisite_courses_not_completed(user, enrolled_courses):
     return pre_requisite_courses
 
 
-def get_required_content_milestones(user, course_key):
-    """
-    Get all of the outstanding content milestones for this course, for this user
-    It return list of outstanding content milestones
-    """
-    required_contents = []
-    if settings.FEATURES.get('MILESTONES_APP', False):
-        try:
-            milestone_paths = get_course_milestones_fulfillment_paths(
-                unicode(course_key),
-                serialize_user(user)
-            )
-        except InvalidMilestoneRelationshipTypeException:
-            return required_contents
-
-        # For each outstanding milestone, see if this content is one of its fulfillment paths
-        for path_key in milestone_paths:
-            milestone_path = milestone_paths[path_key]
-            if milestone_path.get('content') and len(milestone_path['content']):
-                for content in milestone_path['content']:
-                    required_contents.append(content)
-    return required_contents
-
-
 def get_prerequisite_courses_display(course_descriptor):
     """
     It would retrieve pre-requisite courses, make display strings
@@ -197,6 +173,21 @@ def get_required_content(course, user):
             if milestone_path.get('content') and len(milestone_path['content']):
                 for content in milestone_path['content']:
                     required_content.append(content)
+
+    # local imports to avoid circular reference
+    from student.models import EntranceExamConfiguration
+    from courseware.access import has_access
+    can_skip_entrance_exam = EntranceExamConfiguration.user_can_skip_entrance_exam(user, course.id)
+    # check if required_content has any entrance exam
+    # and user is allowed to skip it or user is member of staff
+    # then remove it from required content
+    if required_content and getattr(course, 'entrance_exam_enabled', False) and \
+            (can_skip_entrance_exam or has_access(user, 'staff', course, course.id)):
+        descriptors = [modulestore().get_item(UsageKey.from_string(content)) for content in required_content]
+        entrance_exam_contents = [unicode(descriptor.location)
+                                  for descriptor in descriptors if descriptor.is_entrance_exam]
+        required_content = list(set(required_content) - set(entrance_exam_contents))
+
     return required_content
 
 
