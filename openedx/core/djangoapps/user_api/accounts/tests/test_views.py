@@ -2,9 +2,7 @@
 import unittest
 import ddt
 import json
-from datetime import datetime
 
-from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from rest_framework.test import APITestCase, APIClient
@@ -16,18 +14,52 @@ from student.views import confirm_email_change
 TEST_PASSWORD = "test"
 
 
-@ddt.ddt
-@unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
-class TestAccountAPI(APITestCase):
-
+class UserAPITestCase(APITestCase):
+    """
+    The base class for all tests of the User API
+    """
     def setUp(self):
-        super(TestAccountAPI, self).setUp()
+        super(APITestCase, self).setUp()
+
         self.anonymous_client = APIClient()
         self.different_user = UserFactory.create(password=TEST_PASSWORD)
         self.different_client = APIClient()
         self.staff_user = UserFactory(is_staff=True, password=TEST_PASSWORD)
         self.staff_client = APIClient()
         self.user = UserFactory.create(password=TEST_PASSWORD)
+
+    def login_client(self, api_client, user):
+        """Helper method for getting the client and user and logging in. Returns client. """
+        client = getattr(self, api_client)
+        user = getattr(self, user)
+        client.login(username=user.username, password=TEST_PASSWORD)
+        return client
+
+    def send_patch(self, client, json_data, content_type="application/merge-patch+json", expected_status=204):
+        """
+        Helper method for sending a patch to the server, defaulting to application/merge-patch+json content_type.
+        Verifies the expected status and returns the response.
+        """
+        response = client.patch(self.url, data=json.dumps(json_data), content_type=content_type)
+        self.assertEqual(expected_status, response.status_code)
+        return response
+
+    def send_get(self, client, expected_status=200):
+        """
+        Helper method for sending a GET to the server. Verifies the expected status and returns the response.
+        """
+        response = client.get(self.url)
+        self.assertEqual(expected_status, response.status_code)
+        return response
+
+
+@ddt.ddt
+@unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
+class TestAccountAPI(UserAPITestCase):
+
+    def setUp(self):
+        super(TestAccountAPI, self).setUp()
+
         self.url = reverse("accounts_api", kwargs={'username': self.user.username})
 
     def test_get_account_anonymous_user(self):
