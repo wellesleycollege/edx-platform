@@ -89,3 +89,16 @@ class TestProfileAPI(UserAPITestCase):
             self._verify_full_profile_response(response)
         else:
             self._verify_private_profile_response(response)
+
+    @ddt.data(
+        ("client", "user"),
+        ("staff_client", "staff_user"),
+    )
+    @ddt.unpack
+    def test_get_profile_unknown_user(self, api_client, username):
+        """
+        Test that requesting a user who does not exist returns a 404.
+        """
+        client = self.login_client(api_client, username)
+        response = client.get(reverse("profiles_api", kwargs={'username': "does_not_exist"}))
+        self.assertEqual(404, response.status_code)

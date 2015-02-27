@@ -19,6 +19,7 @@ from rest_framework import permissions
 from student.models import UserProfile
 from student.views import do_email_change_request
 from openedx.core.djangoapps.user_api.accounts.serializers import AccountLegacyProfileSerializer, AccountUserSerializer
+from openedx.core.djangoapps.user_api.api.account import AccountUserNotFound
 from openedx.core.lib.api.permissions import IsUserInUrlOrStaff
 from openedx.core.lib.api.parsers import MergePatchParser
 from openedx.core.djangoapps.user_api.api.account import AccountUserNotFound, AccountUpdateError
@@ -106,6 +107,9 @@ class AccountView(APIView):
 
         Returns:
            A dict containing each of the account's fields.
+
+        Raises:
+           AccountUserNotFound: raised if there is no account for the specified username.
         """
         existing_user, existing_user_profile = AccountView._get_user_and_profile(username)
         user_serializer = AccountUserSerializer(existing_user)

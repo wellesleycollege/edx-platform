@@ -7,12 +7,14 @@ https://openedx.atlassian.net/wiki/display/TNL/User+API
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authentication import OAuth2Authentication, SessionAuthentication
 from rest_framework import permissions
 
 from ..accounts.views import AccountView
+from ..api.account import AccountUserNotFound
 from ..models import UserPreference
 
 from . import PROFILE_VISIBILITY_PREF_KEY, ALL_USERS_VISIBILITY
@@ -48,11 +50,14 @@ class ProfileView(APIView):
             include_all_results = self.request.QUERY_PARAMS.get('include_all') == 'true'
         else:
             include_all_results = False
-        profile_settings = ProfileView.get_serialized_profile(
-            username,
-            settings.PROFILE_CONFIGURATION,
-            include_all_results=include_all_results,
-        )
+        try:
+            profile_settings = ProfileView.get_serialized_profile(
+                username,
+                settings.PROFILE_CONFIGURATION,
+                include_all_results=include_all_results,
+            )
+        except AccountUserNotFound:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(profile_settings)
 
     @staticmethod
@@ -75,6 +80,9 @@ class ProfileView(APIView):
 
         Returns:
            A dict containing each of the user's profile fields.
+
+        Raises:
+           AccountUserNotFound: raised if there is no account for the specified username.
         """
         account_settings = AccountView.get_serialized_account(username)
         profile_settings = {}
