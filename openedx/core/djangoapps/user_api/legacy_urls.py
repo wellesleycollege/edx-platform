@@ -9,7 +9,6 @@ from rest_framework import routers
 from . import views as user_api_views
 from .models import UserPreference
 
-
 USER_API_ROUTER = routers.DefaultRouter()
 USER_API_ROUTER.register(r'users', user_api_views.UserViewSet)
 USER_API_ROUTER.register(r'user_prefs', user_api_views.UserPreferenceViewSet)

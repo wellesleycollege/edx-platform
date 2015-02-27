@@ -4,12 +4,10 @@ import ddt
 import json
 
 from django.core.urlresolvers import reverse
-from django.conf import settings
 from rest_framework.test import APITestCase, APIClient
 
 from student.tests.factories import UserFactory
 from student.models import UserProfile, PendingEmailChange
-from student.views import confirm_email_change
 
 TEST_PASSWORD = "test"
 
@@ -67,9 +65,7 @@ class UserAPITestCase(APITestCase):
         legacy_profile.save()
 
 
-
 @ddt.ddt
-@unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
 class TestAccountAPI(UserAPITestCase):
 
     def setUp(self):

@@ -915,3 +915,26 @@ ELASTIC_FIELD_MAPPINGS = {
         "type": "date"
     }
 }
+
+# The configuration for Studio user profiles
+PROFILE_CONFIGURATION = {
+    # Default visibility level for accounts without a specified value
+    # The value is one of: 'all_users', 'private'
+    "default_visibility": 'all_users',
+
+    # The list of all fields that can be shown on a user's profile
+    "all_fields": [
+        'username',
+        'profile_image',
+        'country',
+        'time_zone',
+        'languages',
+        'bio',
+    ],
+
+    # The list of fields that are always public on a user's profile
+    "public_fields": [
+        'username',
+        'profile_image',
+    ],
+}

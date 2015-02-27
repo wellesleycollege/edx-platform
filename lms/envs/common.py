@@ -2048,8 +2048,7 @@ SEARCH_ENGINE = None
 # Use the LMS specific result processor
 SEARCH_RESULT_PROCESSOR = "lms.lib.courseware_search.lms_result_processor.LmsSearchResultProcessor"
 
-######################## Leaner profile configuration ###########################
-
+# The configuration for learner profiles
 PROFILE_CONFIGURATION = {
     # Default visibility level for accounts without a specified value
     # The value is one of: 'all_users', 'private'

@@ -95,8 +95,17 @@ class AccountView(APIView):
 
     @staticmethod
     def get_serialized_account(username):
-        """
-        Returns the serialized JSON for the specified username.
+        """Returns the user's account information serialized as JSON.
+
+        Note:
+          This method does not perform authentication so it is up to the caller
+          to ensure that the result is only returned to the appropriate user.
+
+        Args:
+          username (str): The username for the desired account.
+
+        Returns:
+           A dict containing each of the account's fields.
         """
         existing_user, existing_user_profile = AccountView._get_user_and_profile(username)
         user_serializer = AccountUserSerializer(existing_user)

@@ -57,8 +57,24 @@ class ProfileView(APIView):
 
     @staticmethod
     def get_serialized_profile(username, configuration, include_all_results=False):
-        """
-        Returns a JSON representation of the user's profile settings.
+        """Returns the user's public profile settings serialized as JSON.
+
+        The fields returned are by default governed by the user's privacy preference.
+        If the user has a private profile, then only the fields that are always
+        public are returned. If the user is sharing their profile with all users
+        then all profile fields are returned.
+
+        Note:
+          This method does not perform authentication so it is up to the caller
+          to ensure that the result is only returned to the appropriate user.
+
+        Args:
+          username (str): The username for the desired account.
+          configuration (dict):
+          include_all_results (bool): If true, ignores the user's privacy setting.
+
+        Returns:
+           A dict containing each of the user's profile fields.
         """
         account_settings = AccountView.get_serialized_account(username)
         profile_settings = {}
