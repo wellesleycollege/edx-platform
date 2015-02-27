@@ -7,9 +7,9 @@ data: |
         <p>With the Full Screen Image tool, learners can see the image's details as well as its context within the unit.</p>
         <p>You enable learners to view the image in the full screen by wrapping the image in a link to the larger version of the image. The HTML format required to use the Full Screen Image tool is:</p>
         <pre>
-        &lt;a href="path to full screen image" class="modal-content"&gt;
-          &lt;img alt="text for screen readers" 
-          src="path to image to include in unit page"/&gt;
+        &lt;a href="<i>path to full screen image</i>" class="modal-content"&gt;
+          &lt;img alt="<i>text for screen readers</i>" 
+          src="<i>path to image to include in unit page</i>"/&gt;
         &lt;/a&gt;
         </pre>
         <p>Modify this template as needed.</p>
