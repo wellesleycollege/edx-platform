@@ -12,7 +12,7 @@ data: |
           src="<i>path to image to include in unit page</i>"/&gt;
         &lt;/a&gt;
         </pre>
-        <p>Modify this template as needed.</p>
+        <p>Modify this template as needed. You can modify the example below for your own use.</p>
         <ol>
         <li>Replace the value of the link's <strong>href</strong> attribute with the path to the full size image. Do not change the value of the class attribute.</li>
         <li>Replace the value of the image's <strong>src</strong> attribute with the path to the image that will appear in the unit before a learner opens it in full screen mode.</li>
