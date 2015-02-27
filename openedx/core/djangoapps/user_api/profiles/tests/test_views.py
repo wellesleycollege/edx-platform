@@ -44,13 +44,14 @@ class TestProfileAPI(UserAPITestCase):
         """
         Test that a logged in user can get her own public profile information.
         """
+        self.create_mock_profile(self.user)
         self.client.login(username=self.user.username, password=TEST_PASSWORD)
         response = self.send_get(self.client)
         data = response.data
         self.assertEqual(6, len(data))
         self.assertEqual(self.user.username, data["username"])
+        self.assertEqual("US", data["country"])
         self.assertIsNone(data["profile_image"])
-        self.assertIsNone(data["country"])
         self.assertIsNone(data["time_zone"])
         self.assertIsNone(data["languages"])
         self.assertIsNone(data["bio"])
@@ -60,9 +61,29 @@ class TestProfileAPI(UserAPITestCase):
         Test that a logged in user can get her own private profile information.
         """
         self.client.login(username=self.user.username, password=TEST_PASSWORD)
+
+        # Verify that a user with a private profile only returns the public fields
         UserPreference.set_preference(self.user, PROFILE_VISIBILITY_PREF_KEY, 'private')
         response = self.send_get(self.client)
         data = response.data
         self.assertEqual(2, len(data))
         self.assertEqual(self.user.username, data["username"])
         self.assertIsNone(data["profile_image"])
+
+        # Verify that only the public fields are returned if 'include_all' parameter is specified as false
+        response = self.send_get(self.client, query_parameters='include_all=false')
+        data = response.data
+        self.assertEqual(2, len(data))
+        self.assertEqual(self.user.username, data["username"])
+        self.assertIsNone(data["profile_image"])
+
+        # Verify that all fields are returned if 'include_all' parameter is specified as true
+        response = self.send_get(self.client, query_parameters='include_all=true')
+        data = response.data
+        self.assertEqual(6, len(data))
+        self.assertEqual(self.user.username, data["username"])
+        self.assertIsNone(data["profile_image"])
+        self.assertIsNone(data["country"])
+        self.assertIsNone(data["time_zone"])
+        self.assertIsNone(data["languages"])
+        self.assertIsNone(data["bio"])

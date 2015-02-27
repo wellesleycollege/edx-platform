@@ -2050,22 +2050,24 @@ SEARCH_RESULT_PROCESSOR = "lms.lib.courseware_search.lms_result_processor.LmsSea
 
 ######################## Leaner profile configuration ###########################
 
-# Default visibility level for accounts without a specified value
-# The value is one of: 'global', 'edx_users', 'private'
-DEFAULT_PROFILE_VISIBILITY = 'edx_users'
+PROFILE_CONFIGURATION = {
+    # Default visibility level for accounts without a specified value
+    # The value is one of: 'all_users', 'private'
+    "default_visibility": 'all_users',
 
-# The list of fields that are shown on a shared learner profile
-SHARED_PROFILE_PUBLIC_FIELDS = [
-    'username',
-    'profile_image',
-    'country',
-    'time_zone',
-    'languages',
-    'bio',
-]
+    # The list of all fields that can be shown on a learner's profile
+    "all_fields": [
+        'username',
+        'profile_image',
+        'country',
+        'time_zone',
+        'languages',
+        'bio',
+    ],
 
-# The list of fields that are shown on a private learner profile
-PRIVATE_PROFILE_PUBLIC_FIELDS = [
-    'username',
-    'profile_image',
-]
+    # The list of fields that are always public on a learner's profile
+    "public_fields": [
+        'username',
+        'profile_image',
+    ],
+}

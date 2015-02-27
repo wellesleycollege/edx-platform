@@ -1,2 +1,4 @@
 PROFILE_VISIBILITY_PREF_KEY = 'profile_privacy'
 
+ALL_USERS_VISIBILITY = 'all_users'
+PRIVATE_VISIBILITY = 'private'

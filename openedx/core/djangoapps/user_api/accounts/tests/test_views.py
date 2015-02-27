@@ -44,13 +44,28 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(expected_status, response.status_code)
         return response
 
-    def send_get(self, client, expected_status=200):
+    def send_get(self, client, query_parameters=None, expected_status=200):
         """
         Helper method for sending a GET to the server. Verifies the expected status and returns the response.
         """
-        response = client.get(self.url)
+        url = self.url + '?' + query_parameters if query_parameters else self.url
+        response = client.get(url)
         self.assertEqual(expected_status, response.status_code)
         return response
+
+    def create_mock_profile(self, user):
+        """
+        Helper method that creates a mock profile for the specified user
+        :return:
+        """
+        legacy_profile = UserProfile.objects.get(id=user.id)
+        legacy_profile.country = "US"
+        legacy_profile.level_of_education = "m"
+        legacy_profile.year_of_birth = 1900
+        legacy_profile.goals = "world peace"
+        legacy_profile.mailing_address = "Park Ave"
+        legacy_profile.save()
+
 
 
 @ddt.ddt
@@ -119,15 +134,7 @@ class TestAccountAPI(UserAPITestCase):
         Test that a client (logged in) can get her own account information. Also verifies that a "is_staff"
         user can get the account information for other users.
         """
-        # Create some test profile values.
-        legacy_profile = UserProfile.objects.get(id=self.user.id)
-        legacy_profile.country = "US"
-        legacy_profile.level_of_education = "m"
-        legacy_profile.year_of_birth = 1900
-        legacy_profile.goals = "world peace"
-        legacy_profile.mailing_address = "Park Ave"
-        legacy_profile.save()
-
+        self.create_mock_profile(self.user)
         client = self.login_client(api_client, user)
         response = self.send_get(client)
         data = response.data
