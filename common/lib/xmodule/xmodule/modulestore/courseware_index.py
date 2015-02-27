@@ -9,6 +9,8 @@ from search.search_engine_base import SearchEngine
 
 from . import ModuleStoreEnum
 from .exceptions import ItemNotFoundError
+from eventtracking import tracker
+
 
 # Use default index and document names for now
 INDEX_NAME = "courseware_index"
@@ -36,6 +38,7 @@ class CoursewareSearchIndexer(object):
         Add to courseware search index from given location and its children
         """
         error_list = []
+        indexed_count = 0
         # TODO - inline for now, need to move this out to a celery task
         searcher = SearchEngine.get_search_engine(INDEX_NAME)
         if not searcher:
@@ -115,6 +118,7 @@ class CoursewareSearchIndexer(object):
                 remove_index_item_location(location)
             else:
                 index_item_location(location, None)
+            indexed_count += 1
         except Exception as err:  # pylint: disable=broad-except
             # broad exception so that index operation does not prevent the rest of the application from working
             log.exception(
@@ -127,9 +131,36 @@ class CoursewareSearchIndexer(object):
         if raise_on_error and error_list:
             raise SearchIndexingError(_('Error(s) present during indexing'), error_list)
 
+        return indexed_count
+
+    @classmethod
+    def do_publish_index(cls, modulestore, location, delete=False, raise_on_error=False):
+        """
+        Add to courseware search index published section and children
+        """
+        indexed_count = cls.add_to_search_index(modulestore, location, delete, raise_on_error)
+        #Google Analytics - log index published section request
+        tracker.emit(
+                    'edx.course.index.published',
+                    {
+                        "location_id": location,
+                        "indexed_count": indexed_count
+                    }
+                )
+        return indexed_count
+
     @classmethod
     def do_course_reindex(cls, modulestore, course_key):
         """
         (Re)index all content within the given course
         """
-        return cls.add_to_search_index(modulestore, course_key, delete=False, raise_on_error=True)
+        indexed_count = cls.add_to_search_index(modulestore, course_key, delete=False, raise_on_error=True)
+        #Google Analytics - log reindex course request
+        tracker.emit(
+                    'edx.course.index.reindexed',
+                    {
+                        "indexed_count": indexed_count
+                    }
+                )
+        return indexed_count
+
