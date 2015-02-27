@@ -4,12 +4,20 @@ metadata:
 data: |
         <h2>Full Screen Image Tool</h2>
         <p>Use the Full Screen Image tool to allow learners to open the image in the full screen, zoom in on the image, and drag the image within the screen.</p>
-        <p>With the Full Screen Image tool, learners can see the image's detail as well as its context within the unit.</p>
+        <p>With the Full Screen Image tool, learners can see the image's details as well as its context within the unit.</p>
+        <p>You enable learners to view the image in the full screen by wrapping the image in a link to the larger version of the image. The HTML format required to use the Full Screen Image tool is:</p>
+        <pre>
+        &lt;a href="path to full screen image" class="modal-content"&gt;
+          &lt;img alt="text for screen readers" 
+          src="path to image to include in unit page"/&gt;
+        &lt;/a&gt;
+        </pre>
         <p>Modify this template as needed.</p>
         <ol>
         <li>Replace the value of the link's <strong>href</strong> attribute with the path to the full size image. Do not change the value of the class attribute.</li>
-        <li>Replace the value of the image's <strong>src</strong> attribute with the path to the image that will appear in the unit before a learner opens in full screen mode.</li>
+        <li>Replace the value of the image's <strong>src</strong> attribute with the path to the image that will appear in the unit before a learner opens it in full screen mode.</li>
+        <li>Replace the value of the image's <strong>alt</strong> attribute with text that both describes the image and the action or destination of clicking on the image. This text will be read by screen readers and is required for content accessibility.</li>
         </ol>
-        <p><strong>Note</strong>: Test viewing the image in the full screen in the LMS; you cannot view it in full screen from within Studio.</p>
+        <p><strong>Note</strong>: Test viewing the image in full screen mode in the LMS; you cannot view it in full screen from within Studio.</p>
 
-        <a href="http://static.class.stanford.edu/stanford-hills-big.jpg" class="modal-content"><img alt="The Stanford Hills" src="http://static.class.stanford.edu/stanford-hills-small.jpg" /></a>
+        <a href="http://static.class.stanford.edu/stanford-hills-big.jpg" class="modal-content"><img alt="An image of the Stanford Hills. Select the image to open it in full screen mode." src="http://static.class.stanford.edu/stanford-hills-small.jpg" /></a>
