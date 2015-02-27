@@ -37,6 +37,74 @@
             });
         });
 
+        describe('ajax request settings with path_prefix', function() {
+            var meta_tag;
+            var step = 0;
+            var meta_tag_name_list = ["path_prefix1", "path_prefix", "path_prefix"];
+            var meta_tag_content_values = ["" , "", "testpath"];
+
+            beforeEach(function(){
+                meta_tag = $('<meta name="'+meta_tag_name_list[step]+'" content="'+meta_tag_content_values[step]+'">');
+                meta_tag.appendTo('body');
+                this.initialAjaxWithPrefix = jQuery.ajaxWithPrefix;
+                AjaxPrefix.addAjaxPrefix($, _.bind(function () {
+                    return $("meta[name='path_prefix']").attr('content');;
+                }, this));
+            });
+
+            afterEach(function(){
+                jQuery.ajaxWithPrefix = this.initialAjaxWithPrefix;
+                meta_tag.remove();
+                meta_tag = null;
+                step = step + 1;
+            });
+
+            it('if path_prefix is not defined', function() {
+                spyOn(jQuery, 'ajax');
+                Logger.log('example', 'data');
+                expect(jQuery.ajax).toHaveBeenCalledWith({
+                    url: 'undefined/event',
+                    type: 'POST',
+                    data: {
+                        event_type: 'example',
+                        event: '"data"',
+                        page: window.location.href
+                    },
+                    async: true
+                });
+            });
+
+            it('if path_prefix is defined', function() {
+                spyOn(jQuery, 'ajax');
+                Logger.log('example', 'data');
+                expect(jQuery.ajax).toHaveBeenCalledWith({
+                    url: '/event',
+                    type: 'POST',
+                    data: {
+                        event_type: 'example',
+                        event: '"data"',
+                        page: window.location.href
+                    },
+                    async: true
+                });
+            });
+
+            it('if path_prefix is custom value', function() {
+                spyOn(jQuery, 'ajax');
+                Logger.log('example', 'data');
+                expect(jQuery.ajax).toHaveBeenCalledWith({
+                    url: 'testpath/event',
+                    type: 'POST',
+                    data: {
+                        event_type: 'example',
+                        event: '"data"',
+                        page: window.location.href
+                    },
+                    async: true
+                });
+            });
+        });
+
         describe('listen', function() {
             beforeEach(function () {
                 spyOn(jQuery, 'ajaxWithPrefix');
