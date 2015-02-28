@@ -3,6 +3,7 @@ import unittest
 import ddt
 import json
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase, APIClient
 
@@ -25,6 +26,7 @@ class UserAPITestCase(APITestCase):
         self.staff_user = UserFactory(is_staff=True, password=TEST_PASSWORD)
         self.staff_client = APIClient()
         self.user = UserFactory.create(password=TEST_PASSWORD)
+
 
     def login_client(self, api_client, user):
         """Helper method for getting the client and user and logging in. Returns client. """
@@ -342,6 +344,7 @@ class TestAccountAPI(UserAPITestCase):
         ("staff_client", "staff_user"),
     )
     @ddt.unpack
+    @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
     def test_patch_email(self, api_client, user):
         """
         Test that the user (and anyone with an is_staff account) can request an email change through the accounts API.
@@ -378,27 +381,3 @@ class TestAccountAPI(UserAPITestCase):
             error_response.data["developer_message"]
         )
         self.assertEqual("Valid e-mail address required.", error_response.data["user_message"])
-
-    def login_client(self, api_client, user):
-        """Helper method for getting the client and user and logging in. Returns client. """
-        client = getattr(self, api_client)
-        user = getattr(self, user)
-        client.login(username=user.username, password=TEST_PASSWORD)
-        return client
-
-    def send_patch(self, client, json_data, content_type="application/merge-patch+json", expected_status=204):
-        """
-        Helper method for sending a patch to the server, defaulting to application/merge-patch+json content_type.
-        Verifies the expected status and returns the response.
-        """
-        response = client.patch(self.url, data=json.dumps(json_data), content_type=content_type)
-        self.assertEqual(expected_status, response.status_code)
-        return response
-
-    def send_get(self, client, expected_status=200):
-        """
-        Helper method for sending a GET to the server. Verifies the expected status and returns the response.
-        """
-        response = client.get(self.url)
-        self.assertEqual(expected_status, response.status_code)
-        return response
