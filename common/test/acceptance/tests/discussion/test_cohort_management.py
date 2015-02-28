@@ -9,7 +9,7 @@ from pytz import UTC, utc
 from bok_choy.promise import EmptyPromise
 from nose.plugins.attrib import attr
 from .helpers import CohortTestMixin
-from ..helpers import UniqueCourseTest, create_user_partition_json
+from ..helpers import UniqueCourseTest, EventsTestMixin, create_user_partition_json
 from xmodule.partitions.partitions import Group
 from ...fixtures.course import CourseFixture
 from ...pages.lms.auto_auth import AutoAuthPage
@@ -21,7 +21,7 @@ import uuid
 
 
 @attr('shard_3')
-class CohortConfigurationTest(UniqueCourseTest, CohortTestMixin):
+class CohortConfigurationTest(EventsTestMixin, UniqueCourseTest, CohortTestMixin):
     """
     Tests for cohort management on the LMS Instructor Dashboard
     """

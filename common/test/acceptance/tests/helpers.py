@@ -248,13 +248,14 @@ def get_modal_alert(browser):
 
 
 class EventsTestMixin(object):
-
+    """
+    Helpers and setup for running tests that evaluate events emitted
+    """
     def setUp(self):
         super(EventsTestMixin, self).setUp()
+        self.cleanEvents()
         self.event_collection = MongoClient()["test"]["events"]
         self.start_time = datetime.now()
-        self.addCleanup(self.cleanup)
-
 
     def assert_event_emitted_num_times(self, event_name, event_time, event_user_id, num_times_emitted):
         """
@@ -274,7 +275,10 @@ class EventsTestMixin(object):
             ).count(), num_times_emitted
         )
 
-    def cleanup(self):
+    def cleanEvents(self):
+        """
+        Clear events logs that are stored in Mongo
+        """
         self.event_collection.drop()
 
 
@@ -298,8 +302,6 @@ class UniqueCourseTest(WebAppTest):
             'run': 'test_run',
             'display_name': 'Test Course' + self.unique_id
         }
-
-
 
     @property
     def course_id(self):
