@@ -16,13 +16,12 @@ from rest_framework import status
 from rest_framework.authentication import OAuth2Authentication, SessionAuthentication
 from rest_framework import permissions
 
+from openedx.core.djangoapps.user_api.accounts.serializers import AccountLegacyProfileSerializer, AccountUserSerializer
+from openedx.core.djangoapps.user_api.api.account import AccountUserNotFound, AccountUpdateError
+from openedx.core.lib.api.parsers import MergePatchParser
+from openedx.core.lib.api.permissions import IsUserInUrlOrStaff
 from student.models import UserProfile
 from student.views import do_email_change_request
-from openedx.core.djangoapps.user_api.accounts.serializers import AccountLegacyProfileSerializer, AccountUserSerializer
-from openedx.core.djangoapps.user_api.api.account import AccountUserNotFound
-from openedx.core.lib.api.permissions import IsUserInUrlOrStaff
-from openedx.core.lib.api.parsers import MergePatchParser
-from openedx.core.djangoapps.user_api.api.account import AccountUserNotFound, AccountUpdateError
 
 
 class AccountView(APIView):
