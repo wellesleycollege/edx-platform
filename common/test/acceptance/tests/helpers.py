@@ -247,6 +247,37 @@ def get_modal_alert(browser):
     return browser.switch_to.alert
 
 
+class EventsTestMixin(object):
+
+    def setUp(self):
+        super(EventsTestMixin, self).setUp()
+        self.event_collection = MongoClient()["test"]["events"]
+        self.start_time = datetime.now()
+        self.addCleanup(self.cleanup)
+
+
+    def assert_event_emitted_num_times(self, event_name, event_time, event_user_id, num_times_emitted):
+        """
+        Tests the number of times a particular event was emitted.
+        :param event_name: Expected event name (e.g., "edx.course.enrollment.activated")
+        :param event_time: Latest expected time, after which the event would fire (e.g., the beginning of the test case)
+        :param event_user_id: user_id expected in the event
+        :param num_times_emitted: number of times the event is expected to appear since the event_time
+        """
+        self.assertEqual(
+            self.event_collection.find(
+                {
+                    "name": event_name,
+                    "time": {"$gt": event_time},
+                    "event.user_id": int(event_user_id),
+                }
+            ).count(), num_times_emitted
+        )
+
+    def cleanup(self):
+        self.event_collection.drop()
+
+
 class UniqueCourseTest(WebAppTest):
     """
     Test that provides a unique course ID.
@@ -268,8 +299,7 @@ class UniqueCourseTest(WebAppTest):
             'display_name': 'Test Course' + self.unique_id
         }
 
-        self.event_collection = MongoClient()["test"]["events"]
-        self.start_time = datetime.now()
+
 
     @property
     def course_id(self):
@@ -285,24 +315,6 @@ class UniqueCourseTest(WebAppTest):
             deprecated=(default_store == 'draft')
         )
         return unicode(course_key)
-
-    def assert_event_emitted_num_times(self, event_name, event_time, event_user_id, num_times_emitted):
-        """
-        Tests the number of times a particular event was emitted.
-        :param event_name: Expected event name (e.g., "edx.course.enrollment.activated")
-        :param event_time: Latest expected time, after which the event would fire (e.g., the beginning of the test case)
-        :param event_user_id: user_id expected in the event
-        :param num_times_emitted: number of times the event is expected to appear since the event_time
-        """
-        self.assertEqual(
-            self.event_collection.find(
-                {
-                    "name": event_name,
-                    "time": {"$gt": event_time},
-                    "event.user_id": int(event_user_id),
-                }
-            ).count(), num_times_emitted
-        )
 
 
 class YouTubeConfigError(Exception):

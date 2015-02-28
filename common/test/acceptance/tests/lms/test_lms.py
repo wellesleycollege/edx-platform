@@ -11,6 +11,7 @@ from bok_choy.promise import EmptyPromise
 from bok_choy.web_app_test import WebAppTest
 from ..helpers import (
     UniqueCourseTest,
+    EventsTestMixin,
     load_data_str,
     generate_course_key,
     select_option_by_value,
@@ -198,7 +199,7 @@ class RegisterFromCombinedPageTest(UniqueCourseTest):
 
 
 @attr('shard_1')
-class PayAndVerifyTest(UniqueCourseTest):
+class PayAndVerifyTest(EventsTestMixin, UniqueCourseTest):
     """Test that we can proceed through the payment and verification flow."""
     def setUp(self):
         """Initialize the test.
