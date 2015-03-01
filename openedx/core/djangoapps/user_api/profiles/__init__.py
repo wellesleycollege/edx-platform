@@ -1,3 +1,7 @@
+"""
+Profile constants
+"""
+
 PROFILE_VISIBILITY_PREF_KEY = 'profile_privacy'
 
 # Indicates the user's preference that all users can view their profile.

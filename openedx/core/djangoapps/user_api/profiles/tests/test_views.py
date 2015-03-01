@@ -15,6 +15,9 @@ TEST_PASSWORD = "test"
 
 @ddt.ddt
 class TestProfileAPI(UserAPITestCase):
+    """
+    Unit tests for the profile API.
+    """
 
     def setUp(self):
         super(TestProfileAPI, self).setUp()
