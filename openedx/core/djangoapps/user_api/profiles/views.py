@@ -43,7 +43,7 @@ class ProfileView(APIView):
         """
         GET /api/user/v0/profiles/{username}/[?include_all={true | false}]
 
-        Note: include_all can only be specified if the user is making the request
+        Note: include_all will only be honored if the user is making the request
         for their own username. It defaults to false, but if true then all the
         profile fields will be returned even for a user with a private profile.
         """
@@ -62,7 +62,7 @@ class ProfileView(APIView):
         return Response(profile_settings)
 
     @staticmethod
-    def get_serialized_profile(username, configuration, include_all_results=False):
+    def get_serialized_profile(username, configuration=None, include_all_results=False):
         """Returns the user's public profile settings serialized as JSON.
 
         The fields returned are by default governed by the user's privacy preference.
@@ -85,16 +85,18 @@ class ProfileView(APIView):
         Raises:
            AccountUserNotFound: raised if there is no account for the specified username.
         """
+        if not configuration:
+            configuration = settings.PROFILE_CONFIGURATION
         account_settings = AccountView.get_serialized_account(username)
-        profile_settings = {}
+        profile = {}
         privacy_setting = ProfileView._get_user_profile_privacy(username, configuration)
         if include_all_results or privacy_setting == ALL_USERS_VISIBILITY:
-            public_field_names = configuration.get('all_fields')
+            field_names = configuration.get('all_fields')
         else:
-            public_field_names = configuration.get('public_fields')
-        for field_name in public_field_names:
-            profile_settings[field_name] = account_settings.get(field_name, None)
-        return profile_settings
+            field_names = configuration.get('public_fields')
+        for field_name in field_names:
+            profile[field_name] = account_settings.get(field_name, None)
+        return profile
 
     @staticmethod
     def _get_user_profile_privacy(username, configuration):
