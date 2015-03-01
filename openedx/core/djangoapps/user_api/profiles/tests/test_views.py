@@ -1,7 +1,10 @@
+"""
+Unit tests for profile APIs.
+"""
+
 import ddt
 
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
 
 from openedx.core.djangoapps.user_api.accounts.tests.test_views import UserAPITestCase
 from openedx.core.djangoapps.user_api.models import UserPreference

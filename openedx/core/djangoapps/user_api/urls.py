@@ -1,3 +1,7 @@
+"""
+Defines the URL routes for this app.
+"""
+
 from .accounts.views import AccountView
 from .profiles.views import ProfileView
 

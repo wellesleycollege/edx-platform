@@ -18,7 +18,7 @@ class UserAPITestCase(APITestCase):
     The base class for all tests of the User API
     """
     def setUp(self):
-        super(APITestCase, self).setUp()
+        super(UserAPITestCase, self).setUp()
 
         self.anonymous_client = APIClient()
         self.different_user = UserFactory.create(password=TEST_PASSWORD)
@@ -39,6 +39,7 @@ class UserAPITestCase(APITestCase):
         Helper method for sending a patch to the server, defaulting to application/merge-patch+json content_type.
         Verifies the expected status and returns the response.
         """
+        # pylint: disable=no-member
         response = client.patch(self.url, data=json.dumps(json_data), content_type=content_type)
         self.assertEqual(expected_status, response.status_code)
         return response
@@ -47,7 +48,7 @@ class UserAPITestCase(APITestCase):
         """
         Helper method for sending a GET to the server. Verifies the expected status and returns the response.
         """
-        url = self.url + '?' + query_parameters if query_parameters else self.url
+        url = self.url + '?' + query_parameters if query_parameters else self.url    # pylint: disable=no-member
         response = client.get(url)
         self.assertEqual(expected_status, response.status_code)
         return response
@@ -68,6 +69,9 @@ class UserAPITestCase(APITestCase):
 
 @ddt.ddt
 class TestAccountAPI(UserAPITestCase):
+    """
+    Unit tests for the Account API.
+    """
 
     def setUp(self):
         super(TestAccountAPI, self).setUp()
