@@ -27,7 +27,6 @@ class UserAPITestCase(APITestCase):
         self.staff_client = APIClient()
         self.user = UserFactory.create(password=TEST_PASSWORD)
 
-
     def login_client(self, api_client, user):
         """Helper method for getting the client and user and logging in. Returns client. """
         client = getattr(self, api_client)

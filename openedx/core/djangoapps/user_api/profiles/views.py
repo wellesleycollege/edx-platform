@@ -19,6 +19,7 @@ from ..models import UserPreference
 
 from . import PROFILE_VISIBILITY_PREF_KEY, ALL_USERS_VISIBILITY
 
+
 class ProfileView(APIView):
     """
         **Use Cases**
