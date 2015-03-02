@@ -35,6 +35,12 @@ class AssetIndexTest(StudioCourseTest):
         """
         self.asset_page.visit()
 
+    def test_failed(self):
+        """
+        Do not merge!!!!
+        """
+        self.assertTrue(False)
+
     def test_type_filter_exists(self):
         """
         Make sure type filter is on the page.
