@@ -28,12 +28,15 @@ class ProfileView(APIView):
 
         **Example Requests**:
 
-            GET /api/user/v0/profiles/{username}/
+            GET /api/user/v0/profiles/{username}/[?include_all={true | false}]
 
         **Response Values for GET**
 
-            Returns the same responses as for the AccountView API, but filtered based upon
-            the user's specified privacy permissions.
+            Returns the same responses as for the AccountView API, but
+            filtered based upon the user's specified privacy permissions.
+            If the parameter include_all is passed as 'true' then a user
+            can receive all fields for their own account, ignoring
+            the field visibility preference.
 
     """
     authentication_classes = (OAuth2Authentication, SessionAuthentication)
@@ -43,26 +46,28 @@ class ProfileView(APIView):
         """
         GET /api/user/v0/profiles/{username}/[?include_all={true | false}]
 
-        Note: include_all will only be honored if the user is making the request
-        for their own username. It defaults to false, but if true then all the
-        profile fields will be returned even for a user with a private profile.
+        Note:
+          The include_all query parameter will only be honored if the user is making
+          the request for their own username. It defaults to false, but if true
+          then all the profile fields will be returned even for a user with
+          a private profile.
         """
         if request.user.username == username:
-            include_all_results = self.request.QUERY_PARAMS.get('include_all') == 'true'
+            include_all_fields = self.request.QUERY_PARAMS.get('include_all') == 'true'
         else:
-            include_all_results = False
+            include_all_fields = False
         try:
             profile_settings = ProfileView.get_serialized_profile(
                 username,
                 settings.PROFILE_CONFIGURATION,
-                include_all_results=include_all_results,
+                include_all_fields=include_all_fields,
             )
         except AccountUserNotFound:
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(profile_settings)
 
     @staticmethod
-    def get_serialized_profile(username, configuration=None, include_all_results=False):
+    def get_serialized_profile(username, configuration=None, include_all_fields=False):
         """Returns the user's public profile settings serialized as JSON.
 
         The fields returned are by default governed by the user's privacy preference.
@@ -77,7 +82,7 @@ class ProfileView(APIView):
         Args:
           username (str): The username for the desired account.
           configuration (dict):
-          include_all_results (bool): If true, ignores the user's privacy setting.
+          include_all_fields (bool): If true, ignores the user's privacy setting.
 
         Returns:
            A dict containing each of the user's profile fields.
@@ -90,7 +95,7 @@ class ProfileView(APIView):
         account_settings = AccountView.get_serialized_account(username)
         profile = {}
         privacy_setting = ProfileView._get_user_profile_privacy(username, configuration)
-        if include_all_results or privacy_setting == ALL_USERS_VISIBILITY:
+        if include_all_fields or privacy_setting == ALL_USERS_VISIBILITY:
             field_names = configuration.get('all_fields')
         else:
             field_names = configuration.get('public_fields')
