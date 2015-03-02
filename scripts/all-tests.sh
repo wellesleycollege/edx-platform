@@ -162,7 +162,7 @@ END
                 ;;
 
             "1")
-                paver test_bokchoy --extra_args="-a shard_1 --with-flaky"
+                paver test_bokchoy --extra_args="-a shard_1 --with-flaky"                
                 ;;
 
             "2")
@@ -197,14 +197,12 @@ END
 END
                 ;;
         esac
-
-        # Move the reports to a directory that is unique to the shard
-        # so that when they are 'slurped' to the main flow job, they
-        # do not overwrite reports from other shards.
-        mv reports/ reports_tmp/
-        mkdir -p reports/${TEST_SUITE}/${SHARD}
-        mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
-        rm -r reports_tmp/
-        ;;
-
 esac
+
+
+if [ ${TEST_SUITE} = 'bok-choy' ]; then
+  mv reports/ reports_tmp/
+  mkdir -p reports/${TEST_SUITE}/${SHARD}
+  mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
+  rm -r reports_tmp/
+fi
