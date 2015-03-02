@@ -21,6 +21,21 @@ class ApiKeyHeaderPermission(permissions.BasePermission):
         )
 
 
+class ApiKeyHeaderPermissionIsAuthenticated(ApiKeyHeaderPermission, permissions.IsAuthenticated):
+    """
+    Allow someone to access the view if they have the API key OR they are authenticated.
+
+    See ApiKeyHeaderPermission for more information how the API key portion is implemented.
+    """
+    def has_permission(self, request, view):
+        api_permissions = ApiKeyHeaderPermission.has_permission(self, request, view)
+        print "has api permissions: %d" % api_permissions
+        is_authenticated_permissions = permissions.IsAuthenticated.has_permission(self, request, view)
+        print "has authentication permissions %d" % api_permissions
+
+        return api_permissions or is_authenticated_permissions
+
+
 class IsAuthenticatedOrDebug(permissions.BasePermission):
     """
     Allows access only to authenticated users, or anyone if debug mode is enabled.
