@@ -39,16 +39,11 @@
 
         describe('ajax request settings with path_prefix', function() {
             var meta_tag;
-            var step = 0;
-            var meta_tag_name_list = ["path_prefix1", "path_prefix", "path_prefix"];
-            var meta_tag_content_values = ["" , "", "testpath"];
 
             beforeEach(function(){
-                meta_tag = $('<meta name="'+meta_tag_name_list[step]+'" content="'+meta_tag_content_values[step]+'">');
-                meta_tag.appendTo('body');
                 this.initialAjaxWithPrefix = jQuery.ajaxWithPrefix;
                 AjaxPrefix.addAjaxPrefix($, _.bind(function () {
-                    return $("meta[name='path_prefix']").attr('content');;
+                    return $("meta[name='path_prefix']").attr('content');
                 }, this));
             });
 
@@ -56,10 +51,11 @@
                 jQuery.ajaxWithPrefix = this.initialAjaxWithPrefix;
                 meta_tag.remove();
                 meta_tag = null;
-                step = step + 1;
             });
 
             it('if path_prefix is not defined', function() {
+                meta_tag = $('<meta name="path_prefix1" content="">');
+                meta_tag.appendTo('body');
                 spyOn(jQuery, 'ajax');
                 Logger.log('example', 'data');
                 expect(jQuery.ajax).toHaveBeenCalledWith({
@@ -75,6 +71,8 @@
             });
 
             it('if path_prefix is defined', function() {
+                meta_tag = $('<meta name="path_prefix" content="">');
+                meta_tag.appendTo('body');
                 spyOn(jQuery, 'ajax');
                 Logger.log('example', 'data');
                 expect(jQuery.ajax).toHaveBeenCalledWith({
@@ -90,6 +88,8 @@
             });
 
             it('if path_prefix is custom value', function() {
+                meta_tag = $('<meta name="path_prefix" content="testpath">');
+                meta_tag.appendTo('body');
                 spyOn(jQuery, 'ajax');
                 Logger.log('example', 'data');
                 expect(jQuery.ajax).toHaveBeenCalledWith({
