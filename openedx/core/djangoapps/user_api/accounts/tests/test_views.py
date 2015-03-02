@@ -68,6 +68,7 @@ class UserAPITestCase(APITestCase):
 
 
 @ddt.ddt
+@unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Account APIs are only supported in LMS')
 class TestAccountAPI(UserAPITestCase):
     """
     Unit tests for the Account API.
@@ -347,7 +348,6 @@ class TestAccountAPI(UserAPITestCase):
         ("staff_client", "staff_user"),
     )
     @ddt.unpack
-    @unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Test only valid in lms')
     def test_patch_email(self, api_client, user):
         """
         Test that the user (and anyone with an is_staff account) can request an email change through the accounts API.

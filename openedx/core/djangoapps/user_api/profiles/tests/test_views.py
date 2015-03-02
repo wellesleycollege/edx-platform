@@ -3,7 +3,9 @@ Unit tests for profile APIs.
 """
 
 import ddt
+import unittest
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from openedx.core.djangoapps.user_api.accounts.tests.test_views import UserAPITestCase
@@ -14,6 +16,7 @@ TEST_PASSWORD = "test"
 
 
 @ddt.ddt
+@unittest.skipUnless(settings.ROOT_URLCONF == 'lms.urls', 'Profile APIs are only supported in LMS')
 class TestProfileAPI(UserAPITestCase):
     """
     Unit tests for the profile API.
