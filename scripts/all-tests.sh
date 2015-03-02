@@ -163,18 +163,34 @@ END
 
             "1")
                 paver test_bokchoy --extra_args="-a shard_1 --with-flaky"                
+                mv reports/ reports_tmp/
+                mkdir -p reports/${TEST_SUITE}/${SHARD}
+                mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
+                rm -r reports_tmp/
                 ;;
 
             "2")
                 paver test_bokchoy --extra_args="-a 'shard_2' --with-flaky"
+                mv reports/ reports_tmp/
+                mkdir -p reports/${TEST_SUITE}/${SHARD}
+                mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
+                rm -r reports_tmp/
                 ;;
 
             "3")
                 paver test_bokchoy --extra_args="-a 'shard_3' --with-flaky"
+                mv reports/ reports_tmp/
+                mkdir -p reports/${TEST_SUITE}/${SHARD}
+                mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
+                rm -r reports_tmp/
                 ;;
 
             "4")
                 paver test_bokchoy --extra_args="-a shard_1=False,shard_2=False,shard_3=False --with-flaky"
+                mv reports/ reports_tmp/
+                mkdir -p reports/${TEST_SUITE}/${SHARD}
+                mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
+                rm -r reports_tmp/
                 ;;
 
             # Default case because if we later define another bok-choy shard on Jenkins
@@ -198,11 +214,3 @@ END
                 ;;
         esac
 esac
-
-
-if [ ${TEST_SUITE} = 'bok-choy' ]; then
-  mv reports/ reports_tmp/
-  mkdir -p reports/${TEST_SUITE}/${SHARD}
-  mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
-  rm -r reports_tmp/
-fi
