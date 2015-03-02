@@ -197,6 +197,14 @@ END
 END
                 ;;
         esac
+
+        # Move the reports to a directory that is unique to the shard
+        # so that when they are 'slurped' to the main flow job, they
+        # do not overwrite reports from other shards.
+        mv reports/ reports_tmp/
+        mkdir -p reports/${TEST_SUITE}/${SHARD}
+        mv reports_tmp/* reports/${TEST_SUITE}/${SHARD}
+        rm -r reports_tmp/
         ;;
 
 esac
