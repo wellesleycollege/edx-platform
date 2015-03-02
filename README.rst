@@ -1,4 +1,4 @@
-***NOTE*: Currently not enough RAM on AWS, do not install this version**
+**NOTE: Currently not enough RAM on AWS, do not install this version**
 
 
 
