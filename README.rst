@@ -1,3 +1,7 @@
+*NOTE*: Currently not enough RAM on AWS, do not install this version
+
+
+
 This is the main edX platform which consists of LMS and Studio.
 
 See `code.edx.org`_ for other parts of the edX code base.
